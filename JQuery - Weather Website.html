@@ -79,25 +79,45 @@
 
             $(function(){
 
-                if (navigator.geolocation){
-                    navigator.geolocation.getCurrentPosition (function (position1){
-                        console.log(position1.coords.latitude);
-                        console.log(position1.coords.longitude);
-                        $.getJSON('https://api.openweathermap.org/data/2.5/forecast/daily?lat='+position1.coords.latitude+'&lon='+position1.coords.longitude+'&appid=9fd7a449d055dba26a982a3220f32aa2')
-                        .done ( function (weeklyResult) {
-                            processWeather(weeklyResult);
-                            $('#displayInput').html(weeklyResult['city']['name'])
-                            $('#cityInput').val("");
-                        })
-                        .fail ( function () {
-                            $('#displayInput').html('Unable to get location.')
-                        } )
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition (successGetPosition, fail);
+                    $('#displayInput').html('Searching Location...');
+                } else {
+                    $('#displayInput').html('Unable to get location.');
+                };
+
+                function successGetPosition (position) {
+                    $.getJSON('https://api.openweathermap.org/data/2.5/forecast/daily?lat='+position.coords.latitude+'&lon='+position.coords.longitude+'&appid=9fd7a449d055dba26a982a3220f32aa2')
+                    .done ( function (weeklyResult) {
+                        processWeather(weeklyResult);
+                        $('#displayInput').html(weeklyResult['city']['name'])
+                        $('#cityInput').val("");
                     })
-                }
+                };
+
+                function fail () {
+                    $('#displayInput').html('Unable to get location.')
+                };
+
+                // if (navigator.geolocation){
+                //     navigator.geolocation.getCurrentPosition (function (position1){
+                //         console.log(position1.coords.latitude);
+                //         console.log(position1.coords.longitude);
+                //         $.getJSON('https://api.openweathermap.org/data/2.5/forecast/daily?lat='+position1.coords.latitude+'&lon='+position1.coords.longitude+'&appid=9fd7a449d055dba26a982a3220f32aa2')
+                //         .done ( function (weeklyResult) {
+                //             processWeather(weeklyResult);
+                //             $('#displayInput').html(weeklyResult['city']['name'])
+                //             $('#cityInput').val("");
+                //         })
+                //         .fail ( function () {
+                //             $('#displayInput').html('Unable to get location.')
+                //         } )
+                //     })
+                // }
 
                 $("#searchBtn").on('click', function(){
                     $('tbody').empty();
-                    $('#displayInput').empty();  
+                    $('#displayInput').empty().html('Searching Location...');
                     let city = $('#cityInput').val();
                     $.getJSON("https://api.openweathermap.org/data/2.5/forecast/daily?q="+city+"&appid=9fd7a449d055dba26a982a3220f32aa2")
                     .done ( function (weeklyResult) {
