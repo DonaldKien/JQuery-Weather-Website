@@ -83,11 +83,15 @@
                     navigator.geolocation.getCurrentPosition (function (position1){
                         console.log(position1.coords.latitude);
                         console.log(position1.coords.longitude);
-                        $.getJSON('https://api.openweathermap.org/data/2.5/forecast/daily?lat='+position1.coords.latitude+'&lon='+position1.coords.longitude+'&appid=9fd7a449d055dba26a982a3220f32aa2', function (weeklyResult, status){
+                        $.getJSON('https://api.openweathermap.org/data/2.5/forecast/daily?lat='+position1.coords.latitude+'&lon='+position1.coords.longitude+'&appid=9fd7a449d055dba26a982a3220f32aa2')
+                        .done ( function (weeklyResult) {
                             processWeather(weeklyResult);
                             $('#displayInput').html(weeklyResult['city']['name'])
                             $('#cityInput').val("");
                         })
+                        .fail ( function () {
+                            $('#displayInput').html('Unable to get location.')
+                        } )
                     })
                 }
 
@@ -95,10 +99,14 @@
                     $('tbody').empty();
                     $('#displayInput').empty();  
                     let city = $('#cityInput').val();
-                    $.get("https://api.openweathermap.org/data/2.5/forecast/daily?q="+city+"&appid=9fd7a449d055dba26a982a3220f32aa2", function(weeklyResult, status){
+                    $.getJSON("https://api.openweathermap.org/data/2.5/forecast/daily?q="+city+"&appid=9fd7a449d055dba26a982a3220f32aa2")
+                    .done ( function (weeklyResult) {
                         processWeather(weeklyResult);
                         $('#displayInput').html(weeklyResult['city']['name']) 
                         $('#cityInput').val("");
+                    })
+                    .fail ( function () {
+                        $('#displayInput').html('Location not found.') 
                     })
                 })
 
