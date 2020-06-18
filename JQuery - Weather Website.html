@@ -79,6 +79,56 @@
 
             $(function(){
 
+                function processWeather(weeklyResult){
+                    for ( let i = 0; i < weeklyResult.list.length; i++ ) {
+                        let dailyResult = weeklyResult['list'][i]
+                        let iconSrc = dailyResult['weather'][0]['icon'];
+                        let iconImg = $('<Img>').attr('src', 'https://openweathermap.org/img/wn/'+iconSrc+'@2x.png' );
+                        let icon = $('<td>').html(iconImg);
+                        let dateTimeMilli = dailyResult['dt'];
+                        let dateTime = $('<td>').html( new Date(dateTimeMilli*1000) );
+                        let weather = $('<td>').html(dailyResult['weather'][0]['main']);
+                        let dayTempKel = dailyResult['temp']['day'];
+                        let dayTemp = $('<td>').html( (dayTempKel-273.15).toFixed(2) +' &#xB0;C' );
+
+                        let newTr = $("<tr>").append(icon).append(dateTime).append(weather).append(dayTemp)
+                        $('tbody').append(newTr)
+
+                        newTr.on('click', function(){
+                            console.log(dailyResult)
+                            $('#dailyDetail span').empty();
+                            $('#sunrise').empty();
+                            $('#sunset').empty();
+
+                            let iconImg = $('<Img>').attr('src', 'https://openweathermap.org/img/wn/'+iconSrc+'@2x.png' );
+                            let dayTemp = $('<td>').html( (dayTempKel-273.15).toFixed(2) +' &#xB0;C' );
+                            let sunriseTime = new Date( dailyResult['sunrise'] * 1000 );
+                            let sunsetTime = new Date( dailyResult['sunset'] * 1000 );
+                            
+                            function formatAMPM(date) {
+                                let hours = date.getHours();
+                                let minutes = date.getMinutes();
+                                let ampm = hours >= 12 ? 'PM' : 'AM';
+                                hours = hours % 12;
+                                hours = hours ? hours : 12; // the hour '0' should be '12'
+                                minutes = minutes < 10 ? '0'+minutes : minutes;
+                                let strTime = hours + ':' + minutes + ' ' + ampm;
+                                return strTime;
+                            }
+
+                            $("#daily").attr("hidden",false);
+                            $('#dailyIcon').append(iconImg);
+                            $('#dailyTime').append(new Date(dateTimeMilli*1000));                            
+                            $('#dailyTemp').append(dayTemp);                            
+                            $('#dailyPressure').append( dailyResult["pressure"] );                            
+                            $('#dailyHumidity').append( dailyResult["humidity"] );                            
+                            $('#dailyWind').append( dailyResult["speed"] );
+                            $('#sunrise').append(formatAMPM(sunriseTime));
+                            $('#sunset').append(formatAMPM(sunsetTime));
+                        })
+                    }
+                }
+
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition (successGetPosition, fail);
                     $('#displayInput').html('Searching Location...');
@@ -130,55 +180,7 @@
                     })
                 })
 
-                function processWeather(weeklyResult){
-                    for ( let i = 0; i < weeklyResult.list.length; i++ ) {
-                        let dailyResult = weeklyResult['list'][i]
-                        let iconSrc = dailyResult['weather'][0]['icon'];
-                        let iconImg = $('<Img>').attr('src', 'https://openweathermap.org/img/wn/'+iconSrc+'@2x.png' );
-                        let icon = $('<td>').html(iconImg);
-                        let dateTimeMilli = dailyResult['dt'];
-                        let dateTime = $('<td>').html( new Date(dateTimeMilli*1000) );
-                        let weather = $('<td>').html(dailyResult['weather'][0]['main']);
-                        let dayTempKel = dailyResult['temp']['day'];
-                        let dayTemp = $('<td>').html( (dayTempKel-273.15).toFixed(2) +' &#xB0;C' );
 
-                        let newTr = $("<tr>").append(icon).append(dateTime).append(weather).append(dayTemp)
-                        $('tbody').append(newTr)
-
-                        newTr.on('click', function(){
-                            console.log(dailyResult)
-                            $('#dailyDetail span').empty();
-                            $('#sunrise').empty();
-                            $('#sunset').empty();
-
-                            let iconImg = $('<Img>').attr('src', 'https://openweathermap.org/img/wn/'+iconSrc+'@2x.png' );
-                            let dayTemp = $('<td>').html( (dayTempKel-273.15).toFixed(2) +' &#xB0;C' );
-                            let sunriseTime = new Date( dailyResult['sunrise'] * 1000 );
-                            let sunsetTime = new Date( dailyResult['sunset'] * 1000 );
-                            
-                            function formatAMPM(date) {
-                                let hours = date.getHours();
-                                let minutes = date.getMinutes();
-                                let ampm = hours >= 12 ? 'PM' : 'AM';
-                                hours = hours % 12;
-                                hours = hours ? hours : 12; // the hour '0' should be '12'
-                                minutes = minutes < 10 ? '0'+minutes : minutes;
-                                let strTime = hours + ':' + minutes + ' ' + ampm;
-                                return strTime;
-                            }
-
-                            $("#daily").attr("hidden",false);
-                            $('#dailyIcon').append(iconImg);
-                            $('#dailyTime').append(new Date(dateTimeMilli*1000));                            
-                            $('#dailyTemp').append(dayTemp);                            
-                            $('#dailyPressure').append( dailyResult["pressure"] );                            
-                            $('#dailyHumidity').append( dailyResult["humidity"] );                            
-                            $('#dailyWind').append( dailyResult["speed"] );
-                            $('#sunrise').append(formatAMPM(sunriseTime));
-                            $('#sunset').append(formatAMPM(sunsetTime));
-                        })
-                    }
-                }
 
             })
 
