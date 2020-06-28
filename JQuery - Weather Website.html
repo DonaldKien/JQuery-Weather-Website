@@ -166,17 +166,19 @@
                 // }
 
                 $("#searchBtn").on('click', function(){
+                    $("#daily").attr("hidden",true);
                     $('tbody').empty();
                     $('#displayInput').empty().html('Searching Location...');
                     let city = $('#cityInput').val();
                     $.getJSON("https://api.openweathermap.org/data/2.5/forecast/daily?q="+city+"&appid=9fd7a449d055dba26a982a3220f32aa2")
                     .done ( function (weeklyResult) {
                         processWeather(weeklyResult);
+                        console.log(typeof weeklyResult);
                         $('#displayInput').html(weeklyResult['city']['name']) 
                         $('#cityInput').val("");
                     })
                     .fail ( function () {
-                        $('#displayInput').html('Location not found.') 
+                        $('#displayInput').html('Location not found.');
                     })
                 })
 
